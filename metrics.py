@@ -8,21 +8,28 @@ from scipy.sparse.csgraph import shortest_path
 """
 Compute a symmetric matrix of all DSD values
 Credit for this algorithm goes to Enrico Maiorino, see https://github.com/reemagit/DSD
-    @param G: networkx graph
+    @param G: networkx graph or numpy.ndarray
     
     @return: symmetric matrix of all DSD values
 """
 
 
 def dsd_mat(G):
-    A = nx.to_numpy_matrix(G)
+    A = None
+    if type(G) == np.ndarray:
+        A = G
+    else:
+        A = nx.to_numpy_matrix(G)
     n = A.shape[0]
     degree = A.sum(axis=1)
     p = A / degree
     pi = degree / degree.sum()
     return squareform(pdist(LA.inv(np.eye(n) - p - pi.T), metric='cityblock'))
 
-
 def spd_mat(G):
-    return shortest_path(nx.adjacency_matrix(G, weight=None), directed=False, unweighted=True)
-
+    A = None
+    if type(G) == np.ndarray:
+        A = G
+    else:
+        A = nx.to_numpy_matrix(G)
+    return shortest_path(A, directed=False, unweighted=True)
