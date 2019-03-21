@@ -5,6 +5,19 @@ from numpy import linalg as LA
 from scipy.spatial.distance import pdist, squareform
 from scipy.sparse.csgraph import shortest_path
 
+
+def as_adj(G):
+    """Ensure that G is an adjacency matrix, converting it from an networkx graph
+    if necessary"""
+    A = None
+    if isinstance(G,np.ndarray):
+        A = G
+    else:
+        A = nx.to_numpy_matrix(G)
+    return A
+
+
+
 """
 Compute a symmetric matrix of all DSD values
 Credit for this algorithm goes to Enrico Maiorino, see https://github.com/reemagit/DSD
@@ -13,13 +26,8 @@ Credit for this algorithm goes to Enrico Maiorino, see https://github.com/reemag
     @return: symmetric matrix of all DSD values
 """
 
-
 def dsd_mat(G):
-    A = None
-    if type(G) == np.ndarray:
-        A = G
-    else:
-        A = nx.to_numpy_matrix(G)
+    A = as_adj(G)
     n = A.shape[0]
     degree = A.sum(axis=1)
     p = A / degree
@@ -27,9 +35,5 @@ def dsd_mat(G):
     return squareform(pdist(LA.inv(np.eye(n) - p - pi.T), metric='cityblock'))
 
 def spd_mat(G):
-    A = None
-    if type(G) == np.ndarray:
-        A = G
-    else:
-        A = nx.to_numpy_matrix(G)
+    A = as_adj(G)
     return shortest_path(A, directed=False, unweighted=True)
