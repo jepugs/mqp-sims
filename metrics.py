@@ -37,3 +37,14 @@ def dsd_mat(G):
 def spd_mat(G):
     A = as_adj(G)
     return shortest_path(A, directed=False, unweighted=True)
+
+def rd_mat(G):
+    A = as_adj(G)
+    D = np.eye(A.shape[0])
+    for i in range(A.shape[0]):
+        D[i,i] = np.sum(A[i,:])
+    L = D - A
+    MPinv = np.linalg.pinv(L)
+    MPinv_diag = np.diag(MPinv)
+    RDmat = np.add.outer(MPinv_diag,MPinv_diag) - MPinv - MPinv.T
+    return RDmat
