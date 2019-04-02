@@ -107,6 +107,9 @@ def test_karateClubGraph():
 
 
 def test_coauthorship():
+    """
+    http://konect.uni-koblenz.de/networks/com-dblp
+    """
     fname = "../../Data/com-dblp.ungraph.txt/com-dblp.ungraph.txt"
     f = open(fname, 'rb')
     G = nx.read_edgelist(f, comments='#', delimiter=None, nodetype=int)
