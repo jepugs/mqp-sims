@@ -1,10 +1,7 @@
 import networkx as nx
 import numpy as np
 
-import censor
-#import voting
-#import metric
-#import plot
+import voting
 
 """
 Run a simulation
@@ -18,14 +15,11 @@ Run a simulation
     @return: tuple with the average number of correctly predicted labels and the total number of predicted labels
 """
 
-
-def runsim(G, truth, censorP, vote, metric, avgRuns):
+def runsim(truth, censorP, votefn, metric, avgRuns=10):
     avg_correct = 0
     total = 0
     for i in range(avgRuns):
-        # Create a censored truth table from truth
-        censored = censor.censor(truth, censorP)
-        # Vote for censored labels
-        predicted_correct, total = vote(G, censored, truth, metric)
+        censored = voting.censor(truth, censorP)
+        predicted_correct, total = votefn(censored, truth, metric)
         avg_correct += predicted_correct
     return avg_correct/avgRuns, total

@@ -1,5 +1,27 @@
 import numpy as np
 
+def censor(truth, censorP):
+    """
+    Censor labels
+
+    Parameters
+    ----------
+    truth : dict
+        Dictionary of vertices and their labels
+    censorP : float
+        Proportion of vertices to censor (between 0 and 1)
+
+    Returns
+    -------
+    censored : List of censored vertices
+    """
+    if censorP > 1:
+        censorP = 1
+    if censorP < 0:
+        censorP = 0
+    num_censor = int(np.floor(censorP * len(truth.keys())))
+    censored = np.random.choice(list(truth.keys()), size=num_censor, replace=False)
+    return censored
 
 def random_vote(censored, truth, metric):
     """
@@ -53,7 +75,7 @@ def knn_weighted_majority_vote(censored, truth, metric, k=20):
         k = metric.shape[0] - 1
     for i in range(predicted_total):
         current_vertex = censored[i]
-        row = metric[current_vertex,:] # row of `metric` matrix
+        row = np.asarray(metric[current_vertex,:]) # row of `metric` matrix
         row = row[np.nonzero(row)] # remove 0's from row
         knn_i_list = list(np.argpartition(row, k))[:k+1] # list of indices of `k`-nearest neighbors
         num_k_val = 0
@@ -65,18 +87,18 @@ def knn_weighted_majority_vote(censored, truth, metric, k=20):
             else:
                 neighbors.append(knn_i_list[j])
         for l in range(len(row)): # get all values in row equal to `k`th value of the row
-            if row[knn_i_list[l]] == row[knn_i_list[k]]:
-                rand_sample.append(knn_i_list[l])
+            if row[l] == row[knn_i_list[k]]:
+                rand_sample.append(l)
         neighbors.extend(list(np.random.choice(rand_sample, num_k_val))) # get a random sample of these values
         votes = {}
         pop_tally = 0
         pop_votes = []
         pop_label = ""
         for n in neighbors: # record votes of all `k` neighbors
-            if truth[row[n]] in votes:
-                votes[truth[row[n]]] += 1/row[n]
+            if truth[n] in votes:
+                votes[truth[n]] += 1/row[n]
             else:
-                votes[truth[row[n]]] = 1/row[n]
+                votes[truth[n]] = 1/row[n]
         for v in votes: # tally votes
             if votes[v] > pop_tally:
                 pop_tally = votes[v]
@@ -84,7 +106,7 @@ def knn_weighted_majority_vote(censored, truth, metric, k=20):
             elif votes[v] == pop_tally:
                 pop_votes.append(v)
         pop_index = np.random.randint(len(pop_votes))
-        pop_label = pop_votes[pop_label] # choose the popular label
+        pop_label = pop_votes[pop_index] # choose the popular label
         if pop_label == truth[current_vertex]:
             predicted_correct += 1
     return predicted_correct, predicted_total
@@ -116,18 +138,18 @@ def eb_weighted_majority_vote(censored, truth, metric, epsilon=3.0):
         epsilon = np.mean(metric)
     for i in range(predicted_total):
         current_vertex = censored[i]
-        row = metric[current_vertex,:] # row of `metric` matrix
+        row = np.asarray(metric[current_vertex,:]) # row of `metric` matrix
         row = row[np.nonzero(row)] # remove 0's from row
-        neighbors = row[np.nonzero(row <= epsilon)] # get neighbors within epsilon-ball radius
+        neighbors = np.nonzero(row <= epsilon)[0] # get neighbors within epsilon-ball radius
         votes = {}
         pop_tally = 0
         pop_votes = []
         pop_label = ""
         for n in neighbors: # record votes of all neighbors
-            if truth[row[n]] in votes:
-                votes[truth[row[n]]] += 1/row[n]
+            if truth[n] in votes:
+                votes[truth[n]] += 1/row[n]
             else:
-                votes[truth[row[n]]] = 1/row[n]
+                votes[truth[n]] = 1/row[n]
         for v in votes: # tally votes
             if votes[v] > pop_tally:
                 pop_tally = votes[v]
@@ -138,7 +160,7 @@ def eb_weighted_majority_vote(censored, truth, metric, epsilon=3.0):
             pop_label = ""
         else:
             pop_index = np.random.randint(len(pop_votes))
-            pop_label = pop_votes[pop_label] # choose the popular label
+            pop_label = pop_votes[pop_index] # choose the popular label
         if pop_label == truth[current_vertex]:
             predicted_correct += 1
     return predicted_correct, predicted_total

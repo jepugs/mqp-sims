@@ -5,7 +5,6 @@ from numpy import linalg as LA
 from scipy.spatial.distance import pdist, squareform
 from scipy.sparse.csgraph import shortest_path
 
-
 def as_adj(G):
     """Ensure that G is an adjacency matrix, converting it from an networkx graph
     if necessary"""
@@ -15,8 +14,6 @@ def as_adj(G):
     else:
         A = nx.to_numpy_matrix(G)
     return A
-
-
 
 """
 Compute a symmetric matrix of all DSD values

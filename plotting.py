@@ -2,22 +2,27 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def plotAccuracyToParam(accuracy, param_data, param):
-    plt.plot(param_data, accuracy, 'ro-')
+def plot_param_vs_accuracy(param_data, acc_data, paramstr):
+    plt.plot(param_data, acc_data, label=paramstr, color='orange', marker='o', markersize=6)
+    plt.title(paramstr + " vs Prediction accuracy")
     plt.ylabel('Prediction accuracy')
-    plt.ylim(0,1)
-    plt.xlabel(str(param))
+    plt.xlabel(paramstr)
+    plt.legend()
+    plt.ylim(0, 1.05)
+    plt.xlim(left=0)
     plt.show()
 
-def plotAccuraciesToParam(paramstr, param, acclist):
-    colors = ['r','b']
-    for i, acc in enumerate(acclist):
-        plt.plot(param, acc, colors[i] + 'o-')
-    plt.ylabel('Prediction Accuracy')
+def plot_params_vs_accuracy(param_data, acc_data_list, paramstr):
+    colors = ['#ffaf42', '#4a42ff']
+    markers = ['.', '^']
+    plt.title("TEST")
+    plt.ylabel("Prediction accuracy")
     plt.xlabel(paramstr)
     plt.ylim(0, 1.05)
-    plt.xlim(0, 1)
-    plt.xticks(np.arange(0, 1.05, 0.1))
+    plt.xlim(left=0)
+    for i, acc_data in enumerate(acc_data_list):
+        plt.plot(param_data, acc_data, label=paramstr, color=colors[i], marker=markers[i])
+    plt.legend()
     plt.show()
 
 def plotDistanceFrequency(A, dist):

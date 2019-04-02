@@ -24,7 +24,7 @@ def suite_completeGraphs(n, q, testfn, censorP, vote, metric, avgRuns):
         testacc = testfn(n, p, q, censorP, vote, metric, avgRuns)
         acc.append(testacc)
         param.append(p)
-        p += Decimal(str(0.025))
+        p += Decimal(str(0.25))
         print(testacc)
     return acc, param
 
@@ -36,7 +36,7 @@ Test case for complete graphs
 
 def test_completeGraphs(n, p, q, censorP, vote, metric, avgRuns):
     G, truth = cg.construct(n, p, q)
-    correct, total = sim.runsim(G, truth, censorP, vote, metric(G), avgRuns)
+    correct, total = sim.runsim(truth, censorP, vote, metric(G), avgRuns)
     return correct / total
 
 
@@ -44,10 +44,10 @@ def runtest_completeGraphs():
     n = 200
     q = 0.5
     censorP = 0.3
-    avgRuns = 100
-    dsdacc, dsdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.weightedMajorityVote, metrics.dsdMat, avgRuns)
-    spdacc, spdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.weightedMajorityVote, metrics.spdMat, avgRuns)
-    plotting.plotAccuraciesToParam("p", dsdparam, [dsdacc, spdacc])
+    avgRuns = 10
+    dsdacc, dsdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat, avgRuns)
+    spdacc, spdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat, avgRuns)
+    plotting.plot_params_vs_accuracy(spdparam, [spdacc, dsdacc], "p")
     return
 
 
