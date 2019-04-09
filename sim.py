@@ -17,14 +17,16 @@ Run a simulation
     @return: tuple with the average number of correctly predicted labels and the total number of predicted labels
 """
 
-def runsim(truth, censorP, votefn, metric, avgRuns=10, **kwargs):
+def runsim(truth, censorP, votefn, metric, avg_runs=10, **kwargs):
     avg_correct = 0
     total = 0
-    for i in range(avgRuns):
+    for i in range(avg_runs):
         censored = voting.censor(truth, censorP)
         predicted_correct, total = votefn(censored, truth, metric, **kwargs)
         avg_correct += predicted_correct
-    return avg_correct/avgRuns, total
+    return avg_correct/avg_runs, total
+
+
 
 def runsim_cv(truth, votefn, metric, n_folds=5, shuffle=True, **kwargs):
     """Cross-validated version of runsim. By default, data is shuffled before splitting. extra kwargs
@@ -36,7 +38,6 @@ are passed to the voting function.
     kf = KFold(n_splits=n_folds, shuffle=shuffle)
     for train, test in kf.split(truth):
         # create the training dictionary
-
         predicted_correct, total = votefn(test, truth, metric, **kwargs)
         correct += predicted_correct
     return correct, len(truth)
