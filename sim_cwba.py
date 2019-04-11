@@ -97,12 +97,14 @@ def cwba_graph(n, m, rho, labels=[0,1], seed=None):
 
 
 # used to test CWBA-- we expect to see a power law here
-def plotDegrees(G, graph_title='', filename=None):
-    plt.plot(list(map(G.degree,range(G.order()))))
+def plotDegrees(G, graph_title='', filename=None, **kwargs):
+    degs = dict(G.degree()).values()
+    bins = range(min(degs), max(degs)+1)
+    plt.hist(dict(G.degree()).values(), bins=bins)
     plt.title('Degree Distribution for %s' % graph_title)
     plt.ylabel('degree')
     if filename == None:
         plt.show()
     else:
-        plt.savefig(filename)
+        plt.savefig(filename, **kwargs)
     plt.close()

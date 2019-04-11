@@ -1,7 +1,10 @@
 import networkx as nx
+import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from decimal import Decimal
+from itertools import count
+from pathlib import Path
 import sim
 import metrics
 import voting
@@ -434,3 +437,102 @@ def test_emaileucore():
     return
 
 #test_emaileucore()
+
+
+# coauthorship graph files (not included in repo)
+coauthor_truth_filename = 'coauthorGiantSCORELabel.txt'
+coauthor_dsd_filename = 'coauthorGiantDSD.txt'
+coauthor_spd_filename = 'coauthorGiantSPD.txt'
+coauthor_rd_filename = 'coauthorGiantRD.txt'
+
+# save the matrices on multiple runs
+def fexists(str):
+    ''' check if a file exists based on its name '''
+    return Path(str).is_file()
+
+coauthor_truth = None
+coauthor_dsd = None
+coauthor_spd = None
+coauthor_rd = None
+
+coauthor_truth = np.loadtxt(coauthor_truth_filename, delimiter=' ') if \
+    fexists(coauthor_truth_filename) and coauthor_truth is None else coauthor_truth
+coauthor_dsd = np.loadtxt(coauthor_dsd_filename, delimiter=' ') if \
+    fexists(coauthor_dsd_filename) and coauthor_dsd is None else coauthor_dsd
+coauthor_spd = np.loadtxt(coauthor_spd_filename, delimiter=' ') if \
+    fexists(coauthor_truth_filename) and coauthor_spd is None else coauthor_spd
+coauthor_rd = np.loadtxt(coauthor_rd_filename, delimiter=' ') if \
+    fexists(coauthor_truth_filename) and coauthor_rd is None else coauthor_rd
+
+
+def test_coauthor_cv(n_folds=5, k=20):
+    truth = dict(zip(count(), np.loadtxt(coauthor_truth_filename)))
+
+    dsd_corr,dsd_total = sim.runsim_cv(truth, 
+                                       voting.knn_weighted_majority_vote,
+                                       coauthor_dsd, 
+                                       n_folds=n_folds,
+                                       k=k)
+    print('DSD: %.2f' % (dsd_corr/dsd_total))
+
+    spd_corr,spd_total = sim.runsim_cv(truth,
+                                       voting.knn_weighted_majority_vote,
+                                       coauthor_spd,
+                                       n_folds=n_folds,
+                                       k=k)
+    print('SPD: %.2f' % (spd_corr/spd_total))
+
+    rd_corr,rd_total = sim.runsim_cv(truth,
+                                     voting.knn_weighted_majority_vote,
+                                     coauthor_rd, 
+                                     n_folds=n_folds,
+                                     k=k)
+    print('RD: %.2f' % (rd_corr/rd_total))
+
+def test_coauthor(censor_rate=0.7, k=20, n_runs=10, verbose=False):
+    truth = dict(zip(count(), np.loadtxt(coauthor_truth_filename)))
+
+    dsd_corr,dsd_total = sim.runsim(truth,
+                                    censor_rate,
+                                    voting.knn_weighted_majority_vote,
+                                    coauthor_dsd, 
+                                    k=k,
+                                    avg_runs=n_runs)
+    if verbose:
+        print('DSD: %.2f (%d/%d)' % (dsd_corr/dsd_total, dsd_corr, dsd_total))
+
+    spd_corr,spd_total = sim.runsim(truth,
+                                    censor_rate,
+                                    voting.knn_weighted_majority_vote,
+                                    coauthor_spd,
+                                    k=k,
+                                    avg_runs=n_runs)
+    if verbose:
+        print('SPD: %.2f (%d/%d)' % (spd_corr/spd_total, spd_corr, spd_total))
+
+    rd_corr,rd_total = sim.runsim(truth,
+                                  censor_rate,
+                                  voting.knn_weighted_majority_vote,
+                                  coauthor_rd, 
+                                  k=k,
+                                  avg_runs=n_runs)
+
+    if verbose:
+        print('RD: %.2f (%d/%d)' % (rd_corr/rd_total, rd_corr, rd_total))
+
+    return (spd_corr/spd_total, dsd_corr/dsd_total, rd_corr/rd_total)
+
+
+def test_coauthor_k(k_range, censor_rate=0.7, n_runs=5, verbose=True):
+    if verbose:
+        print('*** Coauthor Network (censor_rate=%.2f,n_runs=%d) ***' % (censor_rate, n_runs))
+        print('============================================================')
+    res = []
+    for k in k_range:
+        x = test_coauthor(censor_rate=n_runs, n_runs=n_runs, k=k)
+        if verbose:
+            print('--------------------')
+            print('** k = %d **' % k)
+            print('SPD: %.2f\nDSD: %.2f\nRD: %.2f' % x)
+        res.append(x)
+    return res
