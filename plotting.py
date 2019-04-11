@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def plot_param_vs_accuracy(param_data, acc_data, paramstr):
+def plot_param_vs_accuracy(param_data, acc_data, paramstr, title):
     plt.plot(param_data, acc_data, label=paramstr, color='orange', marker='o', markersize=6)
-    plt.title(paramstr + " vs Prediction accuracy")
+    plt.title(title)
     plt.ylabel('Prediction accuracy')
     plt.xlabel(paramstr)
     plt.legend()
@@ -12,16 +12,16 @@ def plot_param_vs_accuracy(param_data, acc_data, paramstr):
     plt.xlim(left=0)
     plt.show()
 
-def plot_params_vs_accuracy(param_data, acc_data_list, paramstr):
-    colors = ['#ffaf42', '#4a42ff']
-    markers = ['.', '^']
-    plt.title("TEST")
+def plot_params_vs_accuracy(param_data, acc_data_list, paramstr, param_labels, title):
+    colors = ['#ffaf42', '#4a42ff', 'green']
+    markers = ['.', '^', 's']
+    plt.title(title)
     plt.ylabel("Prediction accuracy")
     plt.xlabel(paramstr)
     plt.ylim(0, 1.05)
     plt.xlim(left=0)
     for i, acc_data in enumerate(acc_data_list):
-        plt.plot(param_data, acc_data, label=paramstr, color=colors[i], marker=markers[i])
+        plt.plot(param_data, acc_data, label=param_labels[i], color=colors[i], marker=markers[i])
     plt.legend()
     plt.show()
 
