@@ -1,6 +1,7 @@
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
 from decimal import Decimal
 from itertools import count
 from pathlib import Path
@@ -11,8 +12,189 @@ import voting
 import plotting
 
 import completeGraphs as cg
+import sim_cwba as cwba
 
 
+def test_cg():
+    n = 250
+    p = Decimal(str(0.0))
+    q = Decimal(str(0.0))
+    censorP = 0.7
+    avgRuns = 10
+    increment = Decimal(str(0.025))
+    spdaccs = []
+    dsdaccs = []
+    rdaccs = []
+    params = []
+
+    r = 100
+    
+    p += increment
+##    while float(p) <= 1:
+##        q = Decimal(str(0.5))
+##        A, truth = cg.construct_adj(n,float(p),float(q))
+##        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+##        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
+##        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+##        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+##        spdaccs.append(spdcorr/spdtotal)
+##        dsdaccs.append(dsdcorr/dsdtotal)
+##        rdaccs.append(rdcorr/rdtotal)
+##        p += increment
+##        params.append(float(p))
+##    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Edge addition probability (p)", ["SPD","DSD", "RD"], "NCC (q=0.5)")
+
+    p = Decimal(str(0.5))
+    q = Decimal(str(0.0))
+    spdaccs = []
+    dsdaccs = []
+    rdaccs = []
+    params = []
+
+    q += increment
+    while float(q) <= 1:
+        #A, truth = cg.construct_adj(n,float(p),float(q))
+        A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdaccs.append(spdcorr/spdtotal)
+        dsdaccs.append(dsdcorr/dsdtotal)
+        rdaccs.append(rdcorr/rdtotal)
+        q += increment
+        params.append(float(q))
+    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Edge deletion probability (q)", ["SPD","DSD", "RD"],"NCCH (p=0.5, number of hubs=100)")
+    return
+
+#test_cg()
+
+def test_cg_h():
+    n = 250
+    p = Decimal(str(0.5))
+    q = Decimal(str(0.5))
+    censorP = 0.7
+    avgRuns = 10
+    increment = Decimal(str(1.0))
+    spdaccs = []
+    dsdaccs = []
+    rdaccs = []
+    params = []
+
+    r = Decimal(str(0.0))
+    
+    r += increment
+    while float(r) <= 20:
+        #A, truth = cg.construct_adj(n,float(p),float(q))
+        A, truth = cg.constructWithHubs(n,float(p),float(q),int(r))
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdaccs.append(spdcorr/spdtotal)
+        dsdaccs.append(dsdcorr/dsdtotal)
+        rdaccs.append(rdcorr/rdtotal)
+        r += increment
+        params.append(int(r))
+    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Number of hubs", ["SPD","DSD", "RD"])
+
+    increment = Decimal(str(50.0))
+    spdaccs = []
+    dsdaccs = []
+    rdaccs = []
+    params = []
+
+    r = Decimal(str(50.0))
+    
+    r += increment
+    while float(r) <= 400:
+        #A, truth = cg.construct_adj(n,float(p),float(q))
+        A, truth = cg.constructWithHubs(n,float(p),float(q),int(r))
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdaccs.append(spdcorr/spdtotal)
+        dsdaccs.append(dsdcorr/dsdtotal)
+        rdaccs.append(rdcorr/rdtotal)
+        r += increment
+        params.append(int(r))
+    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Number of hubs", ["SPD","DSD", "RD"])
+    return
+
+#test_cg_h()
+
+def test_cwba():
+    n = 1000
+    rho = Decimal(str(2.0))
+    m = Decimal(str(0.0))
+    censorP = 0.7
+    avgRuns = 10
+    increment = Decimal(str(1.0))
+    spdaccs = []
+    dsdaccs = []
+    rdaccs = []
+    params = []
+    
+    m += increment
+    while int(m) < 20:
+        #A, truth = cg.construct_adj(n,float(p),float(q))
+        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+        A, truth = cwba.cwba_graph(n,int(m),float(rho))
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdaccs.append(spdcorr/spdtotal)
+        dsdaccs.append(dsdcorr/dsdtotal)
+        rdaccs.append(rdcorr/rdtotal)
+        m += increment
+        params.append(int(m))
+    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Minimum vertex degree (m)", ["SPD","DSD", "RD"], "CWBA ("+u"\u03C1"+"=2)")
+
+#test_cwba()
+
+def test_cwba_inv():
+    n = 1000
+    rho_inv = Decimal(str(0.0))
+    m = Decimal(str(300.0))
+    censorP = 0.7
+    avgRuns = 10
+    increment = Decimal(str(0.05))
+    spdaccs = []
+    dsdaccs = []
+    rdaccs = []
+    params = []
+    
+    rho_inv += increment
+    while float(rho_inv) < 1:
+        #A, truth = cg.construct_adj(n,float(p),float(q))
+        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+        A, truth = cwba.cwba_graph(n,int(m),1/float(rho_inv))
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdaccs.append(spdcorr/spdtotal)
+        dsdaccs.append(dsdcorr/dsdtotal)
+        rdaccs.append(rdcorr/rdtotal)
+        rho_inv += increment
+        params.append(float(rho_inv))
+    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "1/rho", ["SPD","DSD", "RD"])
+
+#test_cwba_inv()
+
+def test_coauthor():
+    spdaccs, dsdaccs, rdaccs, params = [], [], [], []
+    f = open('./coauthor_acc_vs_k.csv', 'r')
+    for line in f.readlines():
+        line = line.rstrip()
+        k, spd, dsd, rd = line.split(',')
+        if k == "k":
+            continue
+        params.append(float(k))
+        spdaccs.append(float(spd))
+        dsdaccs.append(float(dsd))
+        rdaccs.append(float(rd))
+    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "k nearest neighbors (k)", ["SPD","DSD", "RD"], "Coauthorship Citation Network")
+    f.close()
+
+test_coauthor()
 
 """
 Test for running multiple test cases of complete graphs
@@ -27,7 +209,7 @@ def suite_completeGraphs(n, q, testfn, censorP, vote, metric, avgRuns):
         testacc = testfn(n, p, q, censorP, vote, metric, avgRuns)
         acc.append(testacc)
         param.append(p)
-        p += Decimal(str(0.25))
+        p += Decimal(str(0.05))
         print(testacc)
     return acc, param
 
@@ -38,8 +220,8 @@ Test case for complete graphs
 
 
 def test_completeGraphs(n, p, q, censorP, vote, metric, avgRuns):
-    G, truth = cg.construct(n, p, q)
-    correct, total = sim.runsim(truth, censorP, vote, metric(G), avgRuns)
+    A, truth = cg.construct_adj(n, p, q)
+    correct, total = sim.runsim(truth, censorP, vote, metric(A), avgRuns)
     return correct / total
 
 
@@ -50,7 +232,8 @@ def runtest_completeGraphs():
     avgRuns = 10
     dsdacc, dsdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat, avgRuns)
     spdacc, spdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat, avgRuns)
-    plotting.plot_params_vs_accuracy(spdparam, [spdacc, dsdacc], "p")
+    rdacc, rdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat, avgRuns)
+    plotting.plot_params_vs_accuracy(spdparam, [spdacc, dsdacc, rdacc], "p", ["SPD","DSD", "RD"])
     return
 
 
@@ -85,6 +268,37 @@ def runtest_completeGraphsWithHubs():
     return
 
 #runtest_completeGraphsWithHubs()
+
+# For 3d plots
+def threeDplot():
+    n = 250
+    censorP = 0.7
+    avgRuns = 5
+    Xs,Ys,Zs = [],[],[]
+    p,q = Decimal(str(0.0)),Decimal(str(0.0))
+    increment = 0.05
+    while p <= 1:
+        while q <= 1:
+            Xs.append(float(p))
+            Ys.append(float(q))
+            #
+            G,truth = cg.construct_adj(n,p,q)
+            correct,total = sim.runsim(truth,censorP,voting.knn_weighted_majority_vote,metrics.dsd_mat(G),avgRuns)
+            acc = correct/total
+            #
+            Zs.append(float(acc))
+            q += Decimal(str(increment))
+        p += Decimal(str(increment))
+        q = Decimal(str(0.0))
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.scatter3D(Xs,Ys,Zs,cmap='Greens')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    plt.show()
+    return Xs,Ys,Zs
+#threeDplot()
 
 
 def test_karateClubGraph():
