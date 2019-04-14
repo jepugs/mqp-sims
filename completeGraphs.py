@@ -49,7 +49,7 @@ def addHubs(G, r):
         G.add_node(newhub)
         # try using np.random.choice
         for v in Gcopy: # try just G
-            if random.random() < 0.8:
+            if random.random() < 0.7:
                 G.add_edge(newhub, v)
     return G
 
@@ -85,6 +85,29 @@ def constructWithHubs(n, p, q, r):
             truth[hub] = 'b'
     return G, truth
 
+
+def bfs_cc(A, source):
+    visited = [False] * A.shape[0]
+    visited[source] = True
+    queue = [source]
+    while queue:
+        queue.pop(0)
+        adj_i = np.nonzero(np.asarray(A[source,:]))
+        for i in adj_i:
+            if visited[i] == False:
+                queue.append(i)
+                visited[i] = True
+    return visited
+
+def lcc(A):
+    visited = [False] * A.shape[0]
+    lcc = []
+    source = 0
+    while False in visited:
+        visit_i = bfs_cc(A, source)
+        visited[visit_i] = True
+    
+    
 
 # complete components adjacency matrix
 def cc_graph_adj(n):

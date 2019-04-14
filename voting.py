@@ -76,19 +76,21 @@ def knn_weighted_majority_vote(censored, truth, metric, k=20):
     for i in range(predicted_total):
         current_vertex = censored[i]
         row = np.asarray(metric[current_vertex,:]) # row of `metric` matrix
+        row = np.delete(row, censored) # remove censored vertices from row
+        # Add check if k too large after?
         row = row[np.nonzero(row)] # remove 0's from row
-        knn_i_list = list(np.argpartition(row, k))[:k+1] # list of indices of `k`-nearest neighbors
+        knn_i_list = list(np.argpartition(row, k))[:k] # list of indices of `k`-nearest neighbors
         num_k_val = 0
         neighbors = []
         rand_sample = []
         for j in range(len(knn_i_list)): # count the values in row equal to `k`th value of the row
-            if row[knn_i_list[j]] == row[knn_i_list[k]]:
+            if row[knn_i_list[j]] == row[knn_i_list[k-1]]:
                 num_k_val += 1
             else:
                 neighbors.append(knn_i_list[j])
         if num_k_val > 0:
             for l in range(len(row)): # get all values in row equal to `k`th value of the row
-                if row[l] == row[knn_i_list[k]]:
+                if row[l] == row[knn_i_list[k-1]]:
                     rand_sample.append(l)
             neighbors.extend(list(np.random.choice(rand_sample, num_k_val))) # get a random sample of these values
         votes = {}

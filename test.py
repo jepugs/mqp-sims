@@ -19,9 +19,9 @@ def test_cg():
     n = 250
     p = Decimal(str(0.0))
     q = Decimal(str(0.0))
-    censorP = 0.7
+    censorP = 0.6
     avgRuns = 10
-    increment = Decimal(str(0.025))
+    increment = Decimal(str(0.05))
     spdaccs = []
     dsdaccs = []
     rdaccs = []
@@ -29,20 +29,21 @@ def test_cg():
 
     r = 100
     
-    p += increment
-##    while float(p) <= 1:
-##        q = Decimal(str(0.5))
-##        A, truth = cg.construct_adj(n,float(p),float(q))
-##        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
-##        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-##        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-##        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
-##        spdaccs.append(spdcorr/spdtotal)
-##        dsdaccs.append(dsdcorr/dsdtotal)
-##        rdaccs.append(rdcorr/rdtotal)
-##        p += increment
-##        params.append(float(p))
-##    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Edge addition probability (p)", ["SPD","DSD", "RD"], "NCC (q=0.5)")
+    #p += increment
+    while float(p) <= 1:
+        q = Decimal(str(0.5))
+        A, truth = cg.construct_adj(n,float(p),float(q))
+        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdaccs.append(spdcorr/spdtotal)
+        dsdaccs.append(dsdcorr/dsdtotal)
+        rdaccs.append(rdcorr/rdtotal)
+        print(p)
+        p += increment
+        params.append(float(p))
+    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Edge addition probability (p)", ["SPD","DSD", "RD"], "NCC (q=0.5)")
 
     p = Decimal(str(0.5))
     q = Decimal(str(0.0))
@@ -53,20 +54,21 @@ def test_cg():
 
     q += increment
     while float(q) <= 1:
-        #A, truth = cg.construct_adj(n,float(p),float(q))
-        A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+        A, truth = cg.construct_adj(n,float(p),float(q))
+        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
         spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
         dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
         rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
+        print(q)
         q += increment
         params.append(float(q))
     plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Edge deletion probability (q)", ["SPD","DSD", "RD"],"NCCH (p=0.5, number of hubs=100)")
     return
 
-#test_cg()
+test_cg()
 
 def test_cg_h():
     n = 250
@@ -179,6 +181,38 @@ def test_cwba_inv():
 
 #test_cwba_inv()
 
+def test_censor():
+    n = 250
+    p = Decimal(str(0.3))
+    q = Decimal(str(0.5))
+    censorP = Decimal(str(0.05))
+    avgRuns = 10
+    increment = Decimal(str(0.05))
+    spdaccs = []
+    dsdaccs = []
+    rdaccs = []
+    params = []
+
+    r = 100
+    
+    #p += increment
+    while float(censorP) <= 1:
+        A, truth = cg.construct_adj(n,float(p),float(q))
+        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+        spdcorr, spdtotal = sim.runsim(truth, float(censorP), voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, float(censorP), voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, float(censorP), voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdaccs.append(spdcorr/spdtotal)
+        dsdaccs.append(dsdcorr/dsdtotal)
+        rdaccs.append(rdcorr/rdtotal)
+        print(censorP)
+        censorP += increment
+        params.append(float(censorP))
+    plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Censoring probability (censorP)", ["SPD","DSD", "RD"], "NCC (q=0.5)")
+    return
+
+#test_censor()
+
 def test_coauthor():
     spdaccs, dsdaccs, rdaccs, params = [], [], [], []
     f = open('./coauthor_acc_vs_k.csv', 'r')
@@ -194,7 +228,7 @@ def test_coauthor():
     plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "k nearest neighbors (k)", ["SPD","DSD", "RD"], "Coauthorship Citation Network")
     f.close()
 
-test_coauthor()
+#test_coauthor()
 
 """
 Test for running multiple test cases of complete graphs
@@ -450,19 +484,19 @@ def fexists(str):
     ''' check if a file exists based on its name '''
     return Path(str).is_file()
 
-coauthor_truth = None
-coauthor_dsd = None
-coauthor_spd = None
-coauthor_rd = None
-
-coauthor_truth = np.loadtxt(coauthor_truth_filename, delimiter=' ') if \
-    fexists(coauthor_truth_filename) and coauthor_truth is None else coauthor_truth
-coauthor_dsd = np.loadtxt(coauthor_dsd_filename, delimiter=' ') if \
-    fexists(coauthor_dsd_filename) and coauthor_dsd is None else coauthor_dsd
-coauthor_spd = np.loadtxt(coauthor_spd_filename, delimiter=' ') if \
-    fexists(coauthor_truth_filename) and coauthor_spd is None else coauthor_spd
-coauthor_rd = np.loadtxt(coauthor_rd_filename, delimiter=' ') if \
-    fexists(coauthor_truth_filename) and coauthor_rd is None else coauthor_rd
+##coauthor_truth = None
+##coauthor_dsd = None
+##coauthor_spd = None
+##coauthor_rd = None
+##
+##coauthor_truth = np.loadtxt(coauthor_truth_filename, delimiter=' ') if \
+##    fexists(coauthor_truth_filename) and coauthor_truth is None else coauthor_truth
+##coauthor_dsd = np.loadtxt(coauthor_dsd_filename, delimiter=' ') if \
+##    fexists(coauthor_dsd_filename) and coauthor_dsd is None else coauthor_dsd
+##coauthor_spd = np.loadtxt(coauthor_spd_filename, delimiter=' ') if \
+##    fexists(coauthor_truth_filename) and coauthor_spd is None else coauthor_spd
+##coauthor_rd = np.loadtxt(coauthor_rd_filename, delimiter=' ') if \
+##    fexists(coauthor_truth_filename) and coauthor_rd is None else coauthor_rd
 
 
 def test_coauthor_cv(n_folds=5, k=20):
