@@ -28,7 +28,7 @@ def test_cg():
     params = []
 
     r = 100
-    
+
     #p += increment
     while float(p) <= 1:
         q = Decimal(str(0.5))
@@ -83,14 +83,14 @@ def test_cg_h():
     params = []
 
     r = Decimal(str(0.0))
-    
+
     r += increment
     while float(r) <= 20:
         #A, truth = cg.construct_adj(n,float(p),float(q))
         A, truth = cg.constructWithHubs(n,float(p),float(q),int(r))
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -105,14 +105,14 @@ def test_cg_h():
     params = []
 
     r = Decimal(str(50.0))
-    
+
     r += increment
     while float(r) <= 400:
         #A, truth = cg.construct_adj(n,float(p),float(q))
         A, truth = cg.constructWithHubs(n,float(p),float(q),int(r))
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -134,15 +134,15 @@ def test_cwba():
     dsdaccs = []
     rdaccs = []
     params = []
-    
+
     m += increment
     while int(m) < 20:
         #A, truth = cg.construct_adj(n,float(p),float(q))
         #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
         A, truth = cwba.cwba_graph(n,int(m),float(rho))
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -163,15 +163,15 @@ def test_cwba_inv():
     dsdaccs = []
     rdaccs = []
     params = []
-    
+
     rho_inv += increment
     while float(rho_inv) < 1:
         #A, truth = cg.construct_adj(n,float(p),float(q))
         #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
         A, truth = cwba.cwba_graph(n,int(m),1/float(rho_inv))
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -194,7 +194,7 @@ def test_censor():
     params = []
 
     r = 100
-    
+
     #p += increment
     while float(censorP) <= 1:
         A, truth = cg.construct_adj(n,float(p),float(q))
@@ -264,9 +264,9 @@ def runtest_completeGraphs():
     q = 0.5
     censorP = 0.3
     avgRuns = 10
-    dsdacc, dsdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat, avgRuns)
-    spdacc, spdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat, avgRuns)
-    rdacc, rdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat, avgRuns)
+    dsdacc, dsdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.scipy_weighted_knn, metrics.dsd_mat, avgRuns)
+    spdacc, spdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.scipy_weighted_knn, metrics.spd_mat, avgRuns)
+    rdacc, rdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.scipy_weighted_knn, metrics.rd_mat, avgRuns)
     plotting.plot_params_vs_accuracy(spdparam, [spdacc, dsdacc, rdacc], "p", ["SPD","DSD", "RD"])
     return
 
@@ -317,7 +317,7 @@ def threeDplot():
             Ys.append(float(q))
             #
             G,truth = cg.construct_adj(n,p,q)
-            correct,total = sim.runsim(truth,censorP,voting.knn_weighted_majority_vote,metrics.dsd_mat(G),avgRuns)
+            correct,total = sim.runsim(truth,censorP,voting.scipy_weighted_knn,metrics.dsd_mat(G),avgRuns)
             acc = correct/total
             #
             Zs.append(float(acc))
@@ -414,8 +414,8 @@ def test_coauthorship():
     print("DSD: ", dsdcorrect/dsdtotal)
     print("SPD: ", spdcorrect/spdtotal)
     return
-    
-    
+
+
 
 #test_coauthorship()
 
@@ -473,6 +473,79 @@ def test_emaileucore():
 #test_emaileucore()
 
 
+####################################################################################################
+
+### Real-world data
+
+def test_rw_cv(truth, spd, dsd, rd, k=20, n_folds=10, verbose=False):
+    '''Test a real-world data set using cross-validation. Truth should be a dict, and spd, dsd, and rd
+ should be matrices.
+
+    '''
+
+    dsd_corr,dsd_total = sim.runsim_cv(truth,
+                                       voting.scipy_weighted_knn,
+                                       dsd,
+                                       n_folds=n_folds,
+                                       k=k)
+    if verbose:
+        print('DSD: %.2f (%d/%d)' % (dsd_corr/dsd_total, dsd_corr, dsd_total))
+
+    spd_corr,spd_total = sim.runsim_cv(truth,
+                                       voting.scipy_weighted_knn,
+                                       spd,
+                                       n_folds=n_folds,
+                                       k=k)
+    if verbose:
+        print('SPD: %.2f (%d/%d)' % (spd_corr/spd_total, spd_corr, spd_total))
+
+    rd_corr,rd_total = sim.runsim_cv(truth,
+                                     voting.scipy_weighted_knn,
+                                     rd,
+                                     n_folds=n_folds,
+                                     k=k)
+    if verbose:
+        print('RD: %.2f (%d/%d)' % (rd_corr/rd_total, rd_corr, rd_total))
+
+    return (spd_corr/spd_total, dsd_corr/dsd_total, rd_corr/rd_total)
+
+def test_rw(truth, spd, dsd, rd, censor_rate=0.7, k=20, n_runs=10, verbose=False):
+    '''Test a real-world data set using random censoring over multiple runs. Truth should be a dict, and
+ spd, dsd, and rd should be matrices.
+
+    '''
+
+    dsd_corr,dsd_total = sim.runsim(truth,
+                                    censor_rate,
+                                    voting.scipy_weighted_knn,
+                                    dsd,
+                                    k=k,
+                                    avg_runs=n_runs)
+    if verbose:
+        print('DSD: %.2f (%d/%d)' % (dsd_corr/dsd_total, dsd_corr, dsd_total))
+
+    spd_corr,spd_total = sim.runsim(truth,
+                                    censor_rate,
+                                    voting.scipy_weighted_knn,
+                                    spd,
+                                    k=k,
+                                    avg_runs=n_runs)
+    if verbose:
+        print('SPD: %.2f (%d/%d)' % (spd_corr/spd_total, spd_corr, spd_total))
+
+    rd_corr,rd_total = sim.runsim(truth,
+                                  censor_rate,
+                                  voting.scipy_weighted_knn,
+                                  rd,
+                                  k=k,
+                                  avg_runs=n_runs)
+
+    if verbose:
+        print('RD: %.2f (%d/%d)' % (rd_corr/rd_total, rd_corr, rd_total))
+
+    return (spd_corr/spd_total, dsd_corr/dsd_total, rd_corr/rd_total)
+
+
 # coauthorship graph files (not included in repo)
 coauthor_truth_filename = 'coauthorGiantSCORELabel.txt'
 coauthor_dsd_filename = 'coauthorGiantDSD.txt'
@@ -484,78 +557,28 @@ def fexists(str):
     ''' check if a file exists based on its name '''
     return Path(str).is_file()
 
-##coauthor_truth = None
-##coauthor_dsd = None
-##coauthor_spd = None
-##coauthor_rd = None
-##
-##coauthor_truth = np.loadtxt(coauthor_truth_filename, delimiter=' ') if \
-##    fexists(coauthor_truth_filename) and coauthor_truth is None else coauthor_truth
-##coauthor_dsd = np.loadtxt(coauthor_dsd_filename, delimiter=' ') if \
-##    fexists(coauthor_dsd_filename) and coauthor_dsd is None else coauthor_dsd
-##coauthor_spd = np.loadtxt(coauthor_spd_filename, delimiter=' ') if \
-##    fexists(coauthor_truth_filename) and coauthor_spd is None else coauthor_spd
-##coauthor_rd = np.loadtxt(coauthor_rd_filename, delimiter=' ') if \
-##    fexists(coauthor_truth_filename) and coauthor_rd is None else coauthor_rd
+coauthor_truth = None
+coauthor_dsd = None
+coauthor_spd = None
+coauthor_rd = None
+
+coauthor_truth = np.loadtxt(coauthor_truth_filename, delimiter=' ') if \
+    fexists(coauthor_truth_filename) and coauthor_truth is None else coauthor_truth
+coauthor_dsd = np.loadtxt(coauthor_dsd_filename, delimiter=' ') if \
+    fexists(coauthor_dsd_filename) and coauthor_dsd is None else coauthor_dsd
+coauthor_spd = np.loadtxt(coauthor_spd_filename, delimiter=' ') if \
+    fexists(coauthor_truth_filename) and coauthor_spd is None else coauthor_spd
+coauthor_rd = np.loadtxt(coauthor_rd_filename, delimiter=' ') if \
+    fexists(coauthor_truth_filename) and coauthor_rd is None else coauthor_rd
 
 
-def test_coauthor_cv(n_folds=5, k=20):
+def test_coauthor_cv(n_folds=5, k=20, verbose=False):
     truth = dict(zip(count(), np.loadtxt(coauthor_truth_filename)))
-
-    dsd_corr,dsd_total = sim.runsim_cv(truth, 
-                                       voting.knn_weighted_majority_vote,
-                                       coauthor_dsd, 
-                                       n_folds=n_folds,
-                                       k=k)
-    print('DSD: %.2f' % (dsd_corr/dsd_total))
-
-    spd_corr,spd_total = sim.runsim_cv(truth,
-                                       voting.knn_weighted_majority_vote,
-                                       coauthor_spd,
-                                       n_folds=n_folds,
-                                       k=k)
-    print('SPD: %.2f' % (spd_corr/spd_total))
-
-    rd_corr,rd_total = sim.runsim_cv(truth,
-                                     voting.knn_weighted_majority_vote,
-                                     coauthor_rd, 
-                                     n_folds=n_folds,
-                                     k=k)
-    print('RD: %.2f' % (rd_corr/rd_total))
+    return test_rw_cv(truth, coauthor_spd, coauthor_dsd, coauthor_rd, n_folds, k, verbose)
 
 def test_coauthor(censor_rate=0.7, k=20, n_runs=10, verbose=False):
     truth = dict(zip(count(), np.loadtxt(coauthor_truth_filename)))
-
-    dsd_corr,dsd_total = sim.runsim(truth,
-                                    censor_rate,
-                                    voting.knn_weighted_majority_vote,
-                                    coauthor_dsd, 
-                                    k=k,
-                                    avg_runs=n_runs)
-    if verbose:
-        print('DSD: %.2f (%d/%d)' % (dsd_corr/dsd_total, dsd_corr, dsd_total))
-
-    spd_corr,spd_total = sim.runsim(truth,
-                                    censor_rate,
-                                    voting.knn_weighted_majority_vote,
-                                    coauthor_spd,
-                                    k=k,
-                                    avg_runs=n_runs)
-    if verbose:
-        print('SPD: %.2f (%d/%d)' % (spd_corr/spd_total, spd_corr, spd_total))
-
-    rd_corr,rd_total = sim.runsim(truth,
-                                  censor_rate,
-                                  voting.knn_weighted_majority_vote,
-                                  coauthor_rd, 
-                                  k=k,
-                                  avg_runs=n_runs)
-
-    if verbose:
-        print('RD: %.2f (%d/%d)' % (rd_corr/rd_total, rd_corr, rd_total))
-
-    return (spd_corr/spd_total, dsd_corr/dsd_total, rd_corr/rd_total)
-
+    return test_rw(truth, coauthor_spd, coauthor_dsd, coauthor_rd, censor_rate, k, n_runs, verbose)
 
 def test_coauthor_k(k_range, censor_rate=0.7, n_runs=5, verbose=True):
     if verbose:
@@ -570,3 +593,34 @@ def test_coauthor_k(k_range, censor_rate=0.7, n_runs=5, verbose=True):
             print('SPD: %.2f\nDSD: %.2f\nRD: %.2f' % x)
         res.append(x)
     return res
+
+# here's some gnarly copy/paste. Sorry
+
+# emailship graph files (not included in repo)
+email_truth_filename = 'email-Eu-coreLabels.txt'
+email_dsd_filename = 'email-Eu-coreDSD.txt'
+email_spd_filename = 'email-Eu-coreSPD.txt'
+email_rd_filename = 'email-Eu-coreRD.txt'
+
+email_truth = None
+email_dsd = None
+email_spd = None
+email_rd = None
+
+email_truth = np.loadtxt(email_truth_filename, delimiter=' ', dtype=np.int) if \
+    fexists(email_truth_filename) and email_truth is None else email_truth
+email_dsd = np.loadtxt(email_dsd_filename, delimiter=' ') if \
+    fexists(email_dsd_filename) and email_dsd is None else email_dsd
+email_spd = np.loadtxt(email_spd_filename, delimiter=' ') if \
+    fexists(email_truth_filename) and email_spd is None else email_spd
+email_rd = np.loadtxt(email_rd_filename, delimiter=' ') if \
+    fexists(email_truth_filename) and email_rd is None else email_rd
+
+
+def test_email_cv(n_folds=5, k=20, verbose=False):
+    truth = dict(email_truth)
+    return test_rw_cv(truth, email_spd, email_dsd, email_rd, n_folds, k, verbose)
+
+def test_email(censor_rate=0.7, k=20, n_runs=10, verbose=False):
+    truth = dict(email_truth)
+    return test_rw(truth, email_spd, email_dsd, email_rd, censor_rate, k, n_runs, verbose)
