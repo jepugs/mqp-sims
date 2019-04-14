@@ -1,6 +1,7 @@
+from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 
-def censor(truth, censorP):
+def censor(truth, n):
     """
     Censor labels
 
@@ -15,13 +16,7 @@ def censor(truth, censorP):
     -------
     censored : List of censored vertices
     """
-    if censorP > 1:
-        censorP = 1
-    if censorP < 0:
-        censorP = 0
-    num_censor = int(np.floor(censorP * len(truth.keys())))
-    censored = np.random.choice(list(truth.keys()), size=num_censor, replace=False)
-    return censored
+    return np.random.choice(list(truth.keys()), size=n, replace=False)
 
 def random_vote(censored, truth, metric):
     """
@@ -48,6 +43,18 @@ def random_vote(censored, truth, metric):
             predicted_correct += 1
     return predicted_correct, predicted_total
 
+
+def scipy_weighted_knn(censored, truth, metric, k=20):
+    def metric_fun(u,v):
+        return metric[int(u[0]),int(v[0])]
+    predictor = KNeighborsClassifier(k, weights='distance',
+                                     #algorithm='brute',
+                                     metric=metric_fun)
+    uncensored = {k:truth[k] for k in filter(lambda x: x not in censored, truth.keys())}
+    predictor.fit(np.array(list(uncensored.keys()),dtype=np.int).reshape(-1,1),
+                  np.asarray(list(uncensored.values()),dtype=np.int))
+    vec = predictor.predict(np.array(censored,dtype=np.int).reshape(-1,1))
+    return np.sum(np.asarray([truth[k] for k in censored],dtype=np.int) == vec)
 
 def knn_weighted_majority_vote(censored, truth, metric, k=20):
     """
@@ -77,12 +84,12 @@ def knn_weighted_majority_vote(censored, truth, metric, k=20):
         current_vertex = censored[i]
         row = np.asarray(metric[current_vertex,:]) # row of `metric` matrix
         row = row[np.nonzero(row)] # remove 0's from row
-        knn_i_list = list(np.argpartition(row, k))[:k+1] # list of indices of `k`-nearest neighbors
+        knn_i_list = list(np.argpartition(row, k))[:k] # list of indices of `k`-nearest neighbors
         num_k_val = 0
         neighbors = []
         rand_sample = []
         for j in range(len(knn_i_list)): # count the values in row equal to `k`th value of the row
-            if row[knn_i_list[j]] == row[knn_i_list[k]]:
+            if row[knn_i_list[j]] == row[knn_i_list[k-1]]:
                 num_k_val += 1
             else:
                 neighbors.append(knn_i_list[j])
@@ -113,7 +120,7 @@ def knn_weighted_majority_vote(censored, truth, metric, k=20):
             pop_label = pop_votes[pop_index] # choose the popular label
         if pop_label == truth[current_vertex]:
             predicted_correct += 1
-    return predicted_correct, predicted_total
+    return predicted_correct
 
 
 def eb_weighted_majority_vote(censored, truth, metric, epsilon=3.0):

@@ -20,8 +20,8 @@ def test_cg():
     p = Decimal(str(0.0))
     q = Decimal(str(0.0))
     censorP = 0.7
-    avgRuns = 10
-    increment = Decimal(str(0.025))
+    avgRuns = 5
+    increment = Decimal(str(0.05))
     spdaccs = []
     dsdaccs = []
     rdaccs = []
@@ -34,9 +34,9 @@ def test_cg():
 ##        q = Decimal(str(0.5))
 ##        A, truth = cg.construct_adj(n,float(p),float(q))
 ##        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
-##        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-##        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-##        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+##        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+##        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+##        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
 ##        spdaccs.append(spdcorr/spdtotal)
 ##        dsdaccs.append(dsdcorr/dsdtotal)
 ##        rdaccs.append(rdcorr/rdtotal)
@@ -53,11 +53,11 @@ def test_cg():
 
     q += increment
     while float(q) <= 1:
-        #A, truth = cg.construct_adj(n,float(p),float(q))
-        A, truth = cg.constructWithHubs(n,float(p),float(q),r)
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        A, truth = cg.construct_adj(n,float(p),float(q))
+        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -86,9 +86,9 @@ def test_cg_h():
     while float(r) <= 20:
         #A, truth = cg.construct_adj(n,float(p),float(q))
         A, truth = cg.constructWithHubs(n,float(p),float(q),int(r))
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -108,9 +108,9 @@ def test_cg_h():
     while float(r) <= 400:
         #A, truth = cg.construct_adj(n,float(p),float(q))
         A, truth = cg.constructWithHubs(n,float(p),float(q),int(r))
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -138,9 +138,9 @@ def test_cwba():
         #A, truth = cg.construct_adj(n,float(p),float(q))
         #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
         A, truth = cwba.cwba_graph(n,int(m),float(rho))
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -167,9 +167,9 @@ def test_cwba_inv():
         #A, truth = cg.construct_adj(n,float(p),float(q))
         #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
         A, truth = cwba.cwba_graph(n,int(m),1/float(rho_inv))
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -194,7 +194,7 @@ def test_coauthor():
     plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "k nearest neighbors (k)", ["SPD","DSD", "RD"], "Coauthorship Citation Network")
     f.close()
 
-test_coauthor()
+# test_coauthor()
 
 """
 Test for running multiple test cases of complete graphs
@@ -230,9 +230,9 @@ def runtest_completeGraphs():
     q = 0.5
     censorP = 0.3
     avgRuns = 10
-    dsdacc, dsdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat, avgRuns)
-    spdacc, spdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat, avgRuns)
-    rdacc, rdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat, avgRuns)
+    dsdacc, dsdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.scipy_weighted_knn, metrics.dsd_mat, avgRuns)
+    spdacc, spdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.scipy_weighted_knn, metrics.spd_mat, avgRuns)
+    rdacc, rdparam = suite_completeGraphs(n, q, test_completeGraphs, censorP, voting.scipy_weighted_knn, metrics.rd_mat, avgRuns)
     plotting.plot_params_vs_accuracy(spdparam, [spdacc, dsdacc, rdacc], "p", ["SPD","DSD", "RD"])
     return
 
@@ -283,7 +283,7 @@ def threeDplot():
             Ys.append(float(q))
             #
             G,truth = cg.construct_adj(n,p,q)
-            correct,total = sim.runsim(truth,censorP,voting.knn_weighted_majority_vote,metrics.dsd_mat(G),avgRuns)
+            correct,total = sim.runsim(truth,censorP,voting.scipy_weighted_knn,metrics.dsd_mat(G),avgRuns)
             acc = correct/total
             #
             Zs.append(float(acc))
@@ -450,7 +450,7 @@ def test_rw_cv(truth, spd, dsd, rd, k=20, n_folds=10, verbose=False):
     '''
 
     dsd_corr,dsd_total = sim.runsim_cv(truth, 
-                                       voting.knn_weighted_majority_vote,
+                                       voting.scipy_weighted_knn,
                                        dsd, 
                                        n_folds=n_folds,
                                        k=k)
@@ -458,7 +458,7 @@ def test_rw_cv(truth, spd, dsd, rd, k=20, n_folds=10, verbose=False):
         print('DSD: %.2f (%d/%d)' % (dsd_corr/dsd_total, dsd_corr, dsd_total))
 
     spd_corr,spd_total = sim.runsim_cv(truth,
-                                       voting.knn_weighted_majority_vote,
+                                       voting.scipy_weighted_knn,
                                        spd,
                                        n_folds=n_folds,
                                        k=k)
@@ -466,7 +466,7 @@ def test_rw_cv(truth, spd, dsd, rd, k=20, n_folds=10, verbose=False):
         print('SPD: %.2f (%d/%d)' % (spd_corr/spd_total, spd_corr, spd_total))
 
     rd_corr,rd_total = sim.runsim_cv(truth,
-                                     voting.knn_weighted_majority_vote,
+                                     voting.scipy_weighted_knn,
                                      rd, 
                                      n_folds=n_folds,
                                      k=k)
@@ -483,7 +483,7 @@ def test_rw(truth, spd, dsd, rd, censor_rate=0.7, k=20, n_runs=10, verbose=False
 
     dsd_corr,dsd_total = sim.runsim(truth,
                                     censor_rate,
-                                    voting.knn_weighted_majority_vote,
+                                    voting.scipy_weighted_knn,
                                     dsd, 
                                     k=k,
                                     avg_runs=n_runs)
@@ -492,7 +492,7 @@ def test_rw(truth, spd, dsd, rd, censor_rate=0.7, k=20, n_runs=10, verbose=False
 
     spd_corr,spd_total = sim.runsim(truth,
                                     censor_rate,
-                                    voting.knn_weighted_majority_vote,
+                                    voting.scipy_weighted_knn,
                                     spd,
                                     k=k,
                                     avg_runs=n_runs)
@@ -501,7 +501,7 @@ def test_rw(truth, spd, dsd, rd, censor_rate=0.7, k=20, n_runs=10, verbose=False
 
     rd_corr,rd_total = sim.runsim(truth,
                                   censor_rate,
-                                  voting.knn_weighted_majority_vote,
+                                  voting.scipy_weighted_knn,
                                   rd, 
                                   k=k,
                                   avg_runs=n_runs)
