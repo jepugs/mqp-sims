@@ -1,5 +1,6 @@
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
+import math
 
 def censor(truth, n):
     """
@@ -50,11 +51,36 @@ def scipy_weighted_knn(censored, truth, metric, k=20):
     predictor = KNeighborsClassifier(k, weights='distance',
                                      #algorithm='brute',
                                      metric=metric_fun)
-    uncensored = {k:truth[k] for k in filter(lambda x: x not in censored, truth.keys())}
-    predictor.fit(np.array(list(uncensored.keys()),dtype=np.int).reshape(-1,1),
-                  np.asarray(list(uncensored.values()),dtype=np.int))
-    vec = predictor.predict(np.array(censored,dtype=np.int).reshape(-1,1))
-    return np.sum(np.asarray([truth[k] for k in censored],dtype=np.int) == vec)
+    uncensored_n = list(filter(lambda x: x not in censored, truth.keys()))
+    uncensored_v = [truth[x] for x in uncensored_n]
+    #uncensored = {k:truth[k] for k in filter(lambda x: x not in censored, truth.keys())}
+##    predictor.fit(np.array(list(uncensored.keys()),dtype=np.int).reshape(-1,1),
+##                  np.asarray(list(uncensored.values()),dtype=np.int))
+##    vec = predictor.predict(np.array(censored,dtype=np.int).reshape(-1,1))
+##    return np.sum(np.asarray([truth[k] for k in censored],dtype=np.int) == vec)
+    predictor.fit(np.asarray(uncensored_n, dtype=np.int).reshape(-1,1),
+                  np.asarray(uncensored_v, dtype=np.int))
+    vec = predictor.predict(np.asarray(censored, dtype=np.int).reshape(-1,1))
+    return np.sum(np.asarray([truth[k] for k in censored], dtype=np.int) == vec)
+
+def sklearn_weighted_knn(censored, truth, metric, k=20):
+    vertices = np.asarray(list(truth.keys()))
+    uncensored_i = np.delete(vertices, np.asarray(censored)) # uncensored indices
+    uncensored_i = np.random.permutation(uncensored_i) # shuffle order
+    uncensored_v = np.asarray([truth[x] for x in uncensored_i]) # shuffled uncensored values
+
+    X_tr = np.reshape(uncensored_i, (-1,1)) # training set
+    ytr = uncensored_v
+    
+    X_te = np.reshape(np.asarray(censored), (-1,1)) # testing set
+    yte = np.asarray([truth[x] for x in censored])
+
+    def metric_fn(u,v):
+        return metric[int(u[0]),int(v[0])]
+    neighbors = KNeighborsClassifier(n_neighbors=k, weights='distance', algorithm='brute', metric=metric_fn)
+    neighbors.fit(X_tr, ytr)
+    yhat = neighbors.predict(X_te)
+    return np.sum((yhat == yte))
 
 def knn_weighted_majority_vote(censored, truth, metric, k=20):
     """
@@ -80,21 +106,21 @@ def knn_weighted_majority_vote(censored, truth, metric, k=20):
     predicted_correct = 0
     if k > metric.shape[0] - 1: # if there are less than `k` vertices
         k = metric.shape[0] - 1
-    for i in range(predicted_total):
-        current_vertex = censored[i]
+    for current_vertex in censored:
         row = np.asarray(metric[current_vertex,:]) # row of `metric` matrix
-        row = np.delete(row, censored) # remove censored vertices from row
-        # Add check if k too large after?
-        row = row[np.nonzero(row)] # remove 0's from row
+        #row = np.delete(row, censored) # remove censored vertices from row
+        row[censored] = math.inf
+        #row = row[np.nonzero(row)] # remove 0's from row
+        row[np.nonzero(row==0)] = math.inf
         knn_i_list = list(np.argpartition(row, k))[:k] # list of indices of `k`-nearest neighbors
         num_k_val = 0
         neighbors = []
         rand_sample = []
-        for j in range(len(knn_i_list)): # count the values in row equal to `k`th value of the row
-            if row[knn_i_list[j]] == row[knn_i_list[k-1]]:
+        for i in range(k): # count the values in row equal to `k`th value of the row
+            if row[knn_i_list[i]] == row[knn_i_list[k-1]]:
                 num_k_val += 1
             else:
-                neighbors.append(knn_i_list[j])
+                neighbors.append(knn_i_list[i])
         if num_k_val > 0:
             for l in range(len(row)): # get all values in row equal to `k`th value of the row
                 if row[l] == row[knn_i_list[k-1]]:

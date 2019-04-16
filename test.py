@@ -14,6 +14,43 @@ import plotting
 import completeGraphs as cg
 import sim_cwba as cwba
 
+def test():
+    n = 250
+    p = Decimal(str(0.0))
+    q = Decimal(str(0.0))
+    censorP = 0.3
+    avgRuns = 5
+    increment = Decimal(str(0.05))
+    spdaccs1 = []
+    spdaccs2 = []
+    dsdaccs = []
+    rdaccs = []
+    params = []
+    r = 100
+
+    q = Decimal(str(0.5))
+    while float(p) <= 1:
+        A, truth = cg.construct_adj(n,float(p),float(q))
+        #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
+        #spdcorr1, spdtotal1 = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        spdcorr1, spdtotal1 = sim.runsim(truth, censorP, voting.sklearn_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        spdcorr2, spdtotal2 = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
+        #dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        #rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
+        spdaccs1.append(spdcorr1/spdtotal1)
+        spdaccs2.append(spdcorr2/spdtotal2)
+        #dsdaccs.append(dsdcorr/dsdtotal)
+        #rdaccs.append(rdcorr/rdtotal)
+        print(p)
+        print(spdcorr1/spdtotal1)
+        print(spdcorr2/spdtotal2)
+        p += increment
+        params.append(float(p))
+    #plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Edge addition probability (p)", ["SPD","DSD", "RD"], "NCC (q=0.5)")
+    plotting.plot_params_vs_accuracy(params, [spdaccs1, spdaccs2], "Edge addition probability (p)", ["SPD Scipy","SPD Mine"], "NCC (q=0.5, censorP=0.6)")
+    return
+
+test()
 
 def test_cg():
     n = 250
@@ -34,9 +71,9 @@ def test_cg():
         q = Decimal(str(0.5))
         A, truth = cg.construct_adj(n,float(p),float(q))
         #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
-        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, censorP, voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
@@ -68,7 +105,7 @@ def test_cg():
     plotting.plot_params_vs_accuracy(params, [spdaccs, dsdaccs, rdaccs], "Edge deletion probability (q)", ["SPD","DSD", "RD"],"NCCH (p=0.5, number of hubs=100)")
     return
 
-test_cg()
+#test_cg()
 
 def test_cg_h():
     n = 250
@@ -196,12 +233,12 @@ def test_censor():
     r = 100
 
     #p += increment
-    while float(censorP) <= 1:
+    while float(censorP) < 1:
         A, truth = cg.construct_adj(n,float(p),float(q))
         #A, truth = cg.constructWithHubs(n,float(p),float(q),r)
-        spdcorr, spdtotal = sim.runsim(truth, float(censorP), voting.knn_weighted_majority_vote, metrics.spd_mat(A), avgRuns)
-        dsdcorr, dsdtotal = sim.runsim(truth, float(censorP), voting.knn_weighted_majority_vote, metrics.dsd_mat(A), avgRuns)
-        rdcorr, rdtotal = sim.runsim(truth, float(censorP), voting.knn_weighted_majority_vote, metrics.rd_mat(A), avgRuns)
+        spdcorr, spdtotal = sim.runsim(truth, float(censorP), voting.scipy_weighted_knn, metrics.spd_mat(A), avgRuns)
+        dsdcorr, dsdtotal = sim.runsim(truth, float(censorP), voting.scipy_weighted_knn, metrics.dsd_mat(A), avgRuns)
+        rdcorr, rdtotal = sim.runsim(truth, float(censorP), voting.scipy_weighted_knn, metrics.rd_mat(A), avgRuns)
         spdaccs.append(spdcorr/spdtotal)
         dsdaccs.append(dsdcorr/dsdtotal)
         rdaccs.append(rdcorr/rdtotal)
