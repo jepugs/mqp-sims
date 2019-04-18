@@ -37,11 +37,12 @@ def spd_mat(G):
 
 def rd_mat(G):
     A = as_adj(G)
-    D = np.eye(A.shape[0])
+    D = np.zeros(A.shape)
     for i in range(A.shape[0]):
         D[i,i] = np.sum(A[i,:])
     L = D - A
-    MPinv = np.linalg.pinv(L)
-    MPinv_diag = np.diag(MPinv)
-    RDmat = np.add.outer(MPinv_diag,MPinv_diag) - MPinv - MPinv.T
-    return RDmat
+    Lp = L +  (1/A.shape[0]) * np.ones(L.shape)
+    Lp_inv = np.linalg.inv(Lp)
+    Lp_inv_diag = np.diag(Lp_inv)
+    RD = np.add.outer(Lp_inv_diag, Lp_inv_diag) - 2*Lp_inv
+    return RD
