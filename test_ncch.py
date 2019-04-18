@@ -36,8 +36,8 @@ def test_ncch_p():
         accs_dsd.append(correct_dsd/total_dsd)
         accs_rd.append(correct_rd/total_rd)
         print(p)
-        p += increment
         params.append(float(p))
+        p += increment
     plotting.plot_params_vs_accuracy(params, [accs_spd, accs_dsd, accs_rd],
                                      "Edge addition probability (p)",
                                      ["SPD","DSD","RD"],
@@ -65,8 +65,8 @@ def test_ncch_q():
         accs_dsd.append(correct_dsd/total_dsd)
         accs_rd.append(correct_rd/total_rd)
         print(q)
-        q += increment
         params.append(float(q))
+        q += increment
     plotting.plot_params_vs_accuracy(params, [accs_spd, accs_dsd, accs_rd],
                                      "Edge deletion probability (q)",
                                      ["SPD","DSD","RD"],
@@ -96,8 +96,8 @@ def test_ncch_r():
         accs_dsd.append(correct_dsd/total_dsd)
         accs_rd.append(correct_rd/total_rd)
         print(r)
-        r += increment
         params.append(r)
+        r += increment
     plotting.plot_params_vs_accuracy(params, [accs_spd, accs_dsd, accs_rd],
                                      "Number of hubs",
                                      ["SPD","DSD","RD"],
@@ -127,8 +127,8 @@ def test_ncch_censor():
         accs_dsd.append(correct_dsd/total_dsd)
         accs_rd.append(correct_rd/total_rd)
         print(censorP)
-        censorP += increment
         params.append(float(censorP))
+        censorP += increment
     plotting.plot_params_vs_accuracy(params, [accs_spd, accs_dsd, accs_rd],
                                      "Vertex label censor proportion",
                                      ["SPD","DSD","RD"],
